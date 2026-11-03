@@ -1,0 +1,28 @@
+"""Auto-généré depuis le modèle UML — ne pas modifier à la main.
+{% for c in comments %}{{ c }}
+{% endfor %}"""
+{% set bases = ([extends] if extends else []) + (implements or []) %}
+
+
+class {{ name }}{% if bases %}({{ bases | join(', ') }}){% endif %}:
+    """{{ comments | join(' — ') }}"""
+
+    def __init__(self) -> None:
+{% for a in attrs %}        self.{{ a.name }}: {{ a.mapped_type }} | None = None
+{% endfor %}
+{% for r in rel_attrs %}        # {{ r.comment }}
+{% if r.is_list %}        self.{{ r.name }}_list: {{ r.collection }} = []
+{% else %}        self.{{ r.name }}: {{ r.type }} | None = None
+{% endif %}
+{% endfor %}
+{% if not attrs and not rel_attrs %}        pass
+{% endif %}
+
+{% for op in ops %}    def {{ op.name }}(self{% for p in op.params %}, {{ p.name }}: {{ p.type }}{% endfor %}) -> {{ op.return_type }}:
+        raise NotImplementedError
+
+{% endfor %}
+{% for iop in iface_ops %}    def {{ iop.name }}(self{% for p in iop.params %}, {{ p.name }}: {{ p.type }}{% endfor %}) -> {{ iop.return_type }}:
+        raise NotImplementedError  # {{ iop.iface }}
+
+{% endfor %}

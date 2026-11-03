@@ -1,0 +1,48 @@
+#include "{{ name }}.hpp"
+
+{% if kind != "interface" %}
+{% for a in attrs %}{{ a.mapped_type }} {{ name }}::get_{{ a.name }}() const
+{
+    return {{ a.name }};
+}
+
+void {{ name }}::set_{{ a.name }}({{ a.mapped_type }} value)
+{
+    {{ a.name }} = value;
+}
+
+{% endfor %}{% for r in rel_attrs %}{% if r.is_list %}void {{ name }}::add_{{ r.name }}({{ r.type }}* value)
+{
+    if (value != nullptr) {
+        {{ r.name }}_list.push_back(value);
+    }
+}
+
+const std::vector<{{ r.type }}*>& {{ name }}::get_{{ r.name }}() const
+{
+    return {{ r.name }}_list;
+}
+
+{% else %}{{ r.type }}* {{ name }}::get_{{ r.name }}() const
+{
+    return {{ r.name }};
+}
+
+void {{ name }}::set_{{ r.name }}({{ r.type }}* value)
+{
+    {{ r.name }} = value;
+}
+
+{% endif %}{% endfor %}{% for op in ops %}{{ op.return_type }} {{ name }}::{{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+{
+    // TODO : implémenter {{ op.name }}.
+{% if op.return_type != "void" %}    return {};
+{% endif %}}
+
+{% endfor %}{% for iop in iface_ops %}{{ iop.return_type }} {{ name }}::{{ iop.name }}({% for p in iop.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+{
+    // TODO : implémenter l'opération de {{ iop.iface }}.
+{% if iop.return_type != "void" %}    return {};
+{% endif %}}
+
+{% endfor %}{% endif %}

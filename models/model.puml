@@ -1,0 +1,22 @@
+@startuml
+class Compte {
+  -solde: Float
+  +debiter(montant: Float): Boolean
+  +crediter(montant: Float): void
+}
+abstract class Personne {
+  -nom: String
+}
+class Client "represente un client" {
+  -email: String
+}
+interface Payable {
+  +payer(montant: Float): void
+}
+Personne <|-- Client
+Client ..|> Payable
+Client "1" *-- "0..*" Compte : possede
+note right of Compte
+  Un compte bancaire appartenant a un client.
+end note
+@enduml

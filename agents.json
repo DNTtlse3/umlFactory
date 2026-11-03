@@ -1,0 +1,20 @@
+[
+  {
+    "language": "java",
+    "module": "generators.java_gen.agent",
+    "port": 8001,
+    "enabled": true
+  },
+  {
+    "language": "python",
+    "module": "generators.python_gen.agent",
+    "port": 8002,
+    "enabled": true
+  },
+  {
+    "language": "cpp",
+    "module": "generators.cpp_gen.agent",
+    "port": 8003,
+    "enabled": true
+  }
+]

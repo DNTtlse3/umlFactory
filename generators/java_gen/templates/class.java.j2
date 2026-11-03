@@ -1,0 +1,42 @@
+{% set has_lists = rel_attrs | selectattr('is_list') | list | length > 0 %}
+{% if has_lists %}import java.util.ArrayList;
+import java.util.List;
+
+{% endif %}/* Auto-généré depuis le modèle UML — umlfactory2code */
+{% for c in comments %}// {{ c }}
+{% endfor %}
+public {% if kind == "interface" %}interface{% elif kind == "abstract" %}abstract class{% else %}class{% endif %} {{ name }}{% if extends %} extends {{ extends }}{% endif %}{% if implements %} implements {{ implements | join(', ') }}{% endif %} {
+
+    // ===== ATTRIBUTS =====
+{% for a in attrs %}    {{ a.visibility }} {{ a.mapped_type }} {{ a.name }};
+{% endfor %}
+{% for r in rel_attrs %}    // {{ r.comment }}
+{% if r.is_list %}    private {{ r.collection }} {{ r.name }}List = new ArrayList<>();
+{% else %}    private {{ r.type }} {{ r.name }};
+{% endif %}
+{% endfor %}
+    // ===== GETTERS & SETTERS =====
+{% for a in attrs %}    public {{ a.mapped_type }} get{{ a.name | capitalize }}() { return {{ a.name }}; }
+    public void set{{ a.name | capitalize }}({{ a.mapped_type }} {{ a.name }}) { this.{{ a.name }} = {{ a.name }}; }
+{% endfor %}
+{% for r in rel_attrs %}{% if r.is_list %}    public {{ r.collection }} get{{ r.type }}List() { return {{ r.name }}List; }
+    public void add{{ r.type }}({{ r.type }} obj) { {{ r.name }}List.add(obj); }
+{% else %}    public {{ r.type }} get{{ r.type }}() { return {{ r.name }}; }
+    public void set{{ r.type }}({{ r.type }} obj) { this.{{ r.name }} = obj; }
+{% endif %}
+{% endfor %}
+    // ===== METHODES =====
+{% if kind == "interface" %}{% for op in ops %}    {{ op.return_type }} {{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endfor %}
+{% elif kind == "abstract" %}{% for op in ops %}    {{ op.visibility }} abstract {{ op.return_type }} {{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endfor %}
+{% else %}{% for op in ops %}    {{ op.visibility }} {{ op.return_type }} {{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %}) {
+        // TODO
+    }
+{% endfor %}{% endif %}
+{% for iop in iface_ops %}    @Override
+    public {{ iop.return_type }} {{ iop.name }}({% for p in iop.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %}) {
+        // TODO: implémentation de {{ iop.iface }}
+    }
+{% endfor %}
+}

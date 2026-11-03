@@ -1,0 +1,41 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+{% if extends %}#include "{{ extends }}.hpp"
+{% endif %}{% for iface in implements %}#include "{{ iface }}.hpp"
+{% endfor %}{% for r in rel_attrs %}class {{ r.type }};
+{% endfor %}
+/* Code généré automatiquement depuis umlFactoryCode. */
+{% for c in comments %}// {{ c }}
+{% endfor %}
+class {{ name }}{% if extends or implements %} : {% if extends %}public {{ extends }}{% if implements %}, {% endif %}{% endif %}{% for iface in implements %}public {{ iface }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+{
+{% if kind == "interface" %}
+public:
+    virtual ~{{ name }}() = default;
+{% for op in ops %}    virtual {{ op.return_type }} {{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %}) = 0;
+{% endfor %}
+{% else %}
+public:
+    {{ name }}() = default;
+    virtual ~{{ name }}() = default;
+{% for a in attrs %}    {{ a.mapped_type }} get_{{ a.name }}() const;
+    void set_{{ a.name }}({{ a.mapped_type }} value);
+{% endfor %}{% for r in rel_attrs %}{% if r.is_list %}    void add_{{ r.name }}({{ r.type }}* value);
+    const std::vector<{{ r.type }}*>& get_{{ r.name }}() const;
+{% else %}    {{ r.type }}* get_{{ r.name }}() const;
+    void set_{{ r.name }}({{ r.type }}* value);
+{% endif %}{% endfor %}
+{% for op in ops %}{{ op.visibility }}:
+    virtual {{ op.return_type }} {{ op.name }}({% for p in op.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endfor %}{% for iop in iface_ops %}public:
+    {{ iop.return_type }} {{ iop.name }}({% for p in iop.params %}{{ p.type }} {{ p.name }}{% if not loop.last %}, {% endif %}{% endfor %}) override;
+{% endfor %}
+private:
+{% for a in attrs %}    {{ a.mapped_type }} {{ a.name }}{};
+{% endfor %}{% for r in rel_attrs %}{% if r.is_list %}    std::vector<{{ r.type }}*> {{ r.name }}_list;
+{% else %}    {{ r.type }}* {{ r.name }} = nullptr;
+{% endif %}{% endfor %}
+{% endif %}};
